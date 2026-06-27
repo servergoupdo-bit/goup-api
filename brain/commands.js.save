@@ -1,0 +1,49 @@
+
+
+function systemStatus() {
+  const cpu = Math.floor(Math.random() * 100);
+  const uptime = Math.floor(Math.random() * 10);
+
+  return {
+    status: cpu < 80 ? "🟢 Sistema estable" : "🟡 Carga alta",
+    cpu: `${cpu}%`,
+    ram: `${ram}%`,
+    uptime: `${uptime} días`
+  };
+}
+
+function dockerStatus() {
+  const containers = Math.floor(Math.random() * 12);
+
+  return {
+    status: "🐳 Docker activo",
+    containers_running: containers
+  };
+}
+
+function n8nStatus() {
+  const workflows = Math.floor(Math.random() * 20);
+
+  return {
+    status: "⚙️ n8n activo",
+    workflows_running: workflows
+  };
+}
+
+function executeIntent(intent) {
+  switch (intent) {
+    case "system_status":
+      return systemStatus();
+
+    case "docker_status":
+      return dockerStatus();
+
+    case "n8n_status":
+      return n8nStatus();
+
+    default:
+      return { status: "❓ unknown intent" };
+  }
+}
+
+module.exports = { executeIntent };

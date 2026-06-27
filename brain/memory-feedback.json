@@ -1,0 +1,120 @@
+[
+  {
+    "timestamp": 1782179071605,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782179313180,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782179434229,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782179472008,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782179686986,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782181906206,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782182135226,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782182530666,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null,
+    "reasoning": null
+  },
+  {
+    "timestamp": 1782184091008,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null
+  },
+  {
+    "timestamp": 1782184096658,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null
+  },
+  {
+    "timestamp": 1782184103895,
+    "input": null,
+    "intent": null,
+    "plugin": null,
+    "success": false,
+    "error": null,
+    "traceId": null,
+    "executionTime": null
+  }
+]
