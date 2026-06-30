@@ -3,6 +3,9 @@ const express = require("express");
 const { bootstrap } = require("../brain/bootstrap");
 const { orchestrate } = require("../brain/core/orchestrator");
 
+// 🧠 IO SELF-POLICING LAYER
+const IOGuardian = require("../brain/core/ioGuardian");
+
 const app = express();
 
 app.use(express.json());
@@ -15,9 +18,25 @@ app.use(express.json());
 
 const boot = bootstrap();
 
-if (!boot.ok) {
-  console.error("[BOOTSTRAP FAILED]", boot.error);
+if (!boot || !boot.ok) {
+  console.error("[BOOTSTRAP FAILED]", boot?.error || "unknown_error");
   process.exit(1);
+}
+
+/**
+ * 🧠 IO GUARDIAN INIT (SELF-POLICING LAYER)
+ */
+
+const ioGuardian = new IOGuardian({
+  eventBus: boot.eventBus,
+  memory: boot.memory
+});
+
+// 🔍 Optional: scan inicial del kernel (no bloqueante)
+try {
+  ioGuardian.scanSource("./brain");
+} catch (err) {
+  console.warn("[IO_GUARDIAN_SCAN_WARN]", err.message);
 }
 
 /**
@@ -37,71 +56,58 @@ app.get("/health", (req, res) => {
 
 /**
  * ==========================================
- * COMMAND ENDPOINT
+ * KERNEL ENTRY ROUTE (EJECUCIÓN)
  * ==========================================
  */
 
-app.post("/command", async (req, res) => {
-
-  const command = req.body?.command;
-
-  if (typeof command !== "string" || command.trim() === "") {
-    return res.status(400).json({
-      success: false,
-      error: "no_command_provided"
-    });
-  }
+app.post("/intent", async (req, res) => {
+  const trace = [];
 
   try {
+    const intent = req.body?.intent;
+
+    trace.push({ stage: "input", intent });
 
     const result = await orchestrate({
-      intent: command,
-      raw: command,
-      traceId: Date.now().toString(36)
+      intent,
+      context: {
+        source: "api/server"
+      }
     });
 
-    return res.json(result);
+    trace.push({ stage: "result", result });
+
+    return res.json({
+      ok: true,
+      result,
+      trace
+    });
 
   } catch (err) {
-
-    console.error("[COMMAND ERROR]", err);
+    try {
+      console.error(
+        "[KERNEL_ERROR]",
+        err?.message || err
+      );
+    } catch (e) {}
 
     return res.status(500).json({
-      success: false,
-      error: "kernel_execution_failed",
-      message: err.message
+      ok: false,
+      error: "runtime_error",
+      message: err?.message || "unknown_error",
+      trace
     });
-
   }
-
 });
 
 /**
  * ==========================================
- * GLOBAL ERROR HANDLER
+ * START SERVER
  * ==========================================
  */
 
-app.use((err, req, res, next) => {
-
-  console.error("[UNHANDLED ERROR]", err);
-
-  res.status(500).json({
-    success: false,
-    error: "unhandled_error",
-    message: err.message
-  });
-
-});
-
-/**
- * ==========================================
- * SERVER START
- * ==========================================
- */
-
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`🚀 GoUP Platform listening on port ${PORT}`);
+  console.log(`[GoUP Kernel] running on port ${PORT}`);
 });

@@ -1,0 +1,102 @@
+brain/identity/systemIdentity.js:        "translate natural language into executable workflows",
+brain/identity/systemIdentity.js:        "optimize execution reliability and cost"
+brain/identity/systemIdentity.js:        "fail-safe execution first"
+brain/identity/systemIdentity.js:        "never execute destructive actions without validation",
+brain/_archive/structuredMemory.js:  executions: {}
+brain/_archive/structuredMemory.js:  if (!memory.executions[intent]) {
+brain/_archive/structuredMemory.js:    memory.executions[intent] = [];
+brain/_archive/structuredMemory.js:  memory.executions[intent].push({
+brain/core/executor.js:async function execute(input = {}, context = {}) {
+brain/core/executor.js:    const executionResult = await ioGateway.request({
+brain/core/executor.js:      stage: "execution",
+brain/core/executor.js:      data: executionResult
+brain/core/executor.js:      result: executionResult
+brain/core/executor.js:module.exports = { execute };
+brain/core/learningLoop.js: * execution → memory → scoring → counterfactual → policy
+brain/core/learningLoop.js:  eventBus.on("execution_complete", (event) => {
+brain/core/n8nWorkflowCompiler.js:          workflow: "command-executor",
+brain/core/orchestrator.js:const { execute } = require("./executor");
+brain/core/orchestrator.js:      result = await execute({
+brain/core/orchestrator.js:  const executionTimeMs = Date.now() - startTime;
+brain/core/orchestrator.js:  const summary = { totalSteps: steps.length, successCount, errorCount, executionTimeMs };
+brain/core/orchestrator.js:  trace("orchestrator.finished", { traceId, status: finalResult.status, executionTimeMs });
+brain/core/workflowObserver.js:  recordExecution(execution) {
+brain/core/workflowObserver.js:      workflowId: execution.workflowId,
+brain/core/workflowObserver.js:      status: execution.status,
+brain/core/workflowObserver.js:      duration: execution.duration,
+brain/core/workflowObserver.js:      steps: execution.steps,
+brain/core/workflowObserver.js:      error: execution.error || null
+brain/core/intentKernel.js:        result = await this._executeDirect(intent);
+brain/core/intentKernel.js:        result = await this._executeSimulated(intent);
+brain/core/intentKernel.js:        result = await this._executePlanned(intent);
+brain/core/intentKernel.js:        result = await this._executeDirect(intent);
+brain/core/intentKernel.js:  async _executeDirect(intent) {
+brain/core/intentKernel.js:    return this.bridge.executeIntent(intent);
+brain/core/intentKernel.js:  async _executeSimulated(intent) {
+brain/core/intentKernel.js:    return this.bridge.executeIntent(best.intent);
+brain/core/intentKernel.js:  async _executePlanned(intent) {
+brain/core/intentKernel.js:      lastResult = await this.bridge.executeIntent(step);
+brain/core/eventBus.js:  eventBus.on("execution_complete", (event) => {
+brain/core/eventBus.js:        executionTime: p.executionTime || 0,
+brain/core/pluginGenerator.js:  execute({ intent }) {
+brain/core/feedback.js:      executionTime: entry.executionTime ?? null
+brain/core/feedback.js:  eventBus.on("execution_complete", (payload) => {
+brain/core/feedback.js:      executionTime: payload.executionTime
+brain/core/decisionLog.js:    executionTime: entry.executionTime,
+brain/core/ioGuardian.js:      "axios",
+brain/core/ioGuardian.js:      "node-fetch",
+brain/core/ioGuardian.js:      "fetch(",
+brain/core/ioGuardian.js:      "http.request",
+brain/core/ioGuardian.js:      "https.request"
+brain/core/executor.bak.js:async function execute(input, context = {}) {
+brain/core/executor.bak.js:      if (!plugin || typeof plugin.execute !== "function") {
+brain/core/executor.bak.js:      const result = await plugin.execute({
+brain/core/executor.bak.js:      stage: "executor_error",
+brain/core/executor.bak.js:    eventBus?.emit?.("execution_error", error);
+brain/core/executor.bak.js:module.exports = { execute };
+brain/core/workflowBridge.js:  async executeIntent(intent) {
+brain/core/workflowBridge.js:        return await this.workflow.execSafe(payload.command);
+brain/memory/workflowMemoryGraph.js:    this.nodes = new Map();   // workflows, intents, executions
+brain/memory/workflowMemoryGraph.js:      type, // "generated", "executed", "failed", "optimized"
+brain/memory/workflowMemoryGraph.js:  registerWorkflowLifecycle({ intent, workflow, execution }) {
+brain/memory/workflowMemoryGraph.js:    const execId = `exec_${Date.now()}`;
+brain/memory/workflowMemoryGraph.js:    this.addNode({ id: execId, type: "EXECUTION", data: execution });
+brain/memory/workflowMemoryGraph.js:    this.addEdge(workflowId, execId, "executed");
+brain/memory/workflowMemoryGraph.js:    if (execution?.status === "failed") {
+brain/memory/workflowMemoryGraph.js:      this.addEdge(execId, workflowId, "failed");
+brain/memory/workflowMemoryGraph.js:      execId
+brain/observability/cognitiveObserver.js:        failures.some(f => f.error?.includes("timeout")) && "High latency in execution path",
+brain/services/n8nService.js:  async executeWorkflow(workflowId, data = {}) {
+brain/services/n8nService.js:        intent: "n8n_execute_workflow",
+brain/services/hostService.js:const { exec } = require("child_process");
+brain/services/hostService.js:      exec(command, options, (error, stdout, stderr) => {
+brain/services/gitService.js:const { exec } = require("child_process");
+brain/services/gitService.js:      exec(`git ${command}`, (error, stdout, stderr) => {
+brain/services/workflowService.js:  async execSafe(command) {
+brain/services/processService.js:const { spawn } = require("child_process");
+brain/federation/transport/httpTransport.js:      intent: "http_transport_request",
+brain/federation/transport/httpTransport.js:        transport: "http"
+brain/federation/federationNode.js:  async execute(intent) {
+brain/commands.js.save:function executeIntent(intent) {
+brain/commands.js.save:module.exports = { executeIntent };
+brain/composer/autonomousWorkflowComposer.js:      { id: "executor", type: "action", service: "n8n" }
+brain/agents/metaAgentBridge.js:    this.on("execution_complete", (e) => {
+brain/agents/learningAgent.js:    this.on("execution_complete", (e) => {
+brain/agents/logAgent.js:    this.on("execution_complete", (e) => {
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null,
+brain/memory-feedback.json:    "executionTime": null
+brain/memory-feedback.json:    "executionTime": null
+brain/memory-feedback.json:    "executionTime": null
+brain/execution/selfHealingEngine.js:  async execute(intent, executorFn) {
+brain/execution/selfHealingEngine.js:        const result = await executorFn(node, intent);
+brain/plugins/echo.js:  execute({ intent }) {
+brain/plugins/system.js:  execute({ intent }) {
+brain/plugins/system.js:      services: ["api", "executor", "eventBus", "feedback"],
+brain/plugins/debug.js:  execute({ intent }) {

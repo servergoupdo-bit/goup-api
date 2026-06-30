@@ -1,70 +1,80 @@
 const { buildPlan } = require("./planner");
 const { selectBestPlugin } = require("./scoring");
 const { getPlugin } = require("../plugins/registry");
+const { getIOGateway } = require("./ioGatewaySingleton");
 
-async function execute(input) {
+async function execute(input = {}, context = {}) {
   const trace = [];
+
+  // 🧠 IO Gateway Singleton (única autoridad del sistema)
+  const ioGateway = getIOGateway();
 
   try {
     const intentObj = {
-      intent: input?.intent || ""
+      intent: input?.intent || "unknown",
+      payload: input?.payload || {},
+      context
     };
 
-    trace.push({ stage: "input", data: intentObj });
+    trace.push({
+      stage: "input",
+      data: intentObj
+    });
 
-    // 1. PLAN
+    // 1. PLAN (sin IO aún)
     const plan = buildPlan(intentObj);
-    trace.push({ stage: "plan", data: plan });
 
-    const results = [];
+    trace.push({
+      stage: "plan",
+      data: plan
+    });
 
-    // 2. EXECUTION LOOP
-    for (const step of plan) {
+    // 2. SELECCIÓN DE PLUGIN
+    const pluginMeta = selectBestPlugin(plan);
 
-      // 2.1 SCORING (decision only)
-      const scoring = selectBestPlugin(step.intent || intentObj.intent);
+    const plugin = getPlugin(pluginMeta?.name);
 
-      const plugin = getPlugin(scoring.plugin);
-
-      if (!plugin || typeof plugin.execute !== "function") {
-        const error = { step, error: "plugin_not_found" };
-
-        results.push(error);
-        trace.push(error);
-        continue;
-      }
-
-      // 2.2 EXECUTE ONLY
-      const result = await plugin.execute({
-        step,
-        input
-      });
-
-      results.push(result);
-
-      trace.push({
-        stage: "execution",
-        plugin: scoring.plugin,
-        result
-      });
+    if (!plugin) {
+      throw new Error(`[EXECUTOR] Plugin not found: ${pluginMeta?.name}`);
     }
 
+    trace.push({
+      stage: "plugin_selected",
+      data: pluginMeta
+    });
+
+    // 3. EJECUCIÓN CONTROLADA (a través del IO Gateway)
+    const executionResult = await ioGateway.request({
+      intent: intentObj.intent,
+      target: pluginMeta?.name,
+      payload: plan,
+      context
+    });
+
+    trace.push({
+      stage: "execution",
+      data: executionResult
+    });
+
+    // 4. RESPUESTA FINAL DEL KERNEL
     return {
-      status: "ok",
-      result: results,
-      trace
+      ok: true,
+      trace,
+      result: executionResult
     };
 
-  } catch (error) {
+  } catch (err) {
+    trace.push({
+      stage: "error",
+      error: err.message
+    });
+
     return {
-      status: "error",
-      result: null,
-      trace,
-      error: error.message
+      ok: false,
+      error: err.message,
+      trace
     };
   }
 }
 
-module.exports = {
-  execute
-};
+module.exports = { execute };

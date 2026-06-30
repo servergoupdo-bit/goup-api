@@ -1,65 +1,93 @@
 const eventBus = require("./core/eventBus");
-
 const { attachEventBus } = require("./core/feedback");
 const { initAgents } = require("./agents");
 const { initLearningLoop } = require("./core/learningLoop");
 const { trace } = require("./core/observability");
-
 const registry = require("./plugins/registry");
 
-/**
- * ==========================================
- * GoUP Bootstrap
- * ==========================================
- * Punto único de inicialización del Kernel.
- */
+// IO LAYERS
+const IOGuardian = require("./core/ioGuardian");
+const IOKernelGuardian = require("./core/ioKernelGuardian");
+const { initIOGateway } = require("./core/ioGatewaySingleton");
 
 let initialized = false;
 
 function bootstrap() {
-
-  if (initialized) {
-    return { ok: true, initialized: true };
-  }
+  if (initialized) return { ok: true, initialized: true };
 
   try {
-
-    // Plugins
-    if (typeof registry.loadPlugins === "function") {
-      registry.loadPlugins();
-    }
+    // =========================
+    // PLUGINS
+    // =========================
+    registry.loadPlugins?.();
     trace("bootstrap.plugins", { status: "loaded" });
 
-    // Feedback
+    // =========================
+    // EVENT BUS
+    // =========================
     attachEventBus(eventBus);
     trace("bootstrap.feedback", { status: "attached" });
 
-    // Learning Loop
-    if (typeof initLearningLoop === "function") {
-      initLearningLoop();
-    }
+    // =========================
+    // IO GUARDIAN (observabilidad)
+    // =========================
+    const ioGuardian = new IOGuardian({
+      eventBus,
+      memory: require("./core/memoryStore"),
+      mode: "observe"
+    });
+
+    ioGuardian.scanSourceTree("./brain");
+    trace("bootstrap.ioGuardian", { status: "initialized" });
+
+    // =========================
+    // IO KERNEL GUARDIAN (ENFORCEMENT)
+    // =========================
+    const ioKernelGuardian = new IOKernelGuardian({
+      eventBus,
+      mode: "observe"
+    });
+
+    ioKernelGuardian.scanSourceTree("./brain");
+
+    trace("bootstrap.ioKernelGuardian", { status: "scan_complete" });
+
+    // =========================
+    // IO GATEWAY (SINGLETON AUTHORITY)
+    // =========================
+    initIOGateway({
+      policyEngine: require("./core/policyEngine"),
+      eventBus,
+      memory: require("./core/memoryStore")
+    });
+
+    trace("bootstrap.ioGateway", { status: "initialized" });
+
+    // =========================
+    // LEARNING LOOP
+    // =========================
+    initLearningLoop?.();
     trace("bootstrap.learningLoop", { status: "initialized" });
 
-    // Agents
+    // =========================
+    // AGENTS
+    // =========================
     initAgents(eventBus);
     trace("bootstrap.agents", { status: "initialized" });
 
     initialized = true;
 
     trace("bootstrap.complete", { status: "ok" });
+
     console.log("✅ Bootstrap initialized");
 
     return { ok: true, initialized: true };
 
   } catch (err) {
-
     trace("bootstrap.error", { error: err.message });
     console.error("[BOOTSTRAP ERROR]", err.message);
-
     return { ok: false, error: err.message };
-
   }
-
 }
 
 module.exports = { bootstrap };
