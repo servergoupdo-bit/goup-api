@@ -1,0 +1,19 @@
+name: Test Oracle Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-oracle:
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
+
+    steps:
+      - name: Verificar Oracle
+        run: |
+          echo "HOST=$(hostname)"
+          echo "USER=$(whoami)"
+          echo "PWD=$(pwd)"
+          echo "ARCH=$(uname -m)"
