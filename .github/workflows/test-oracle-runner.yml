@@ -17,3 +17,8 @@ jobs:
           echo "USER=$(whoami)"
           echo "PWD=$(pwd)"
           echo "ARCH=$(uname -m)"
+
+      - name: Verificar acceso READ a n8n
+        run: |
+          cd /home/ubuntu/goup-api
+          node n8n-operator.js list
