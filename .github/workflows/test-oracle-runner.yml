@@ -22,3 +22,41 @@ jobs:
         run: |
           cd /home/ubuntu/goup-api
           node n8n-operator.js list
+
+      - name: Verificar operaciones WRITE controladas en n8n
+        run: |
+          cd /home/ubuntu/goup-api
+
+          echo "=== CREATE ==="
+          CREATE_OUTPUT=$(node n8n-operator.js create '{"name":"TEMP - GitHub Runner Validation","nodes":[],"connections":{},"settings":{"executionOrder":"v1"}}')
+          echo "$CREATE_OUTPUT"
+
+          TEMP_ID=$(echo "$CREATE_OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.id)})")
+
+          if [ -z "$TEMP_ID" ]; then
+            echo "ERROR: no se obtuvo TEMP_ID"
+            exit 1
+          fi
+
+          echo "TEMP_ID=$TEMP_ID"
+
+          cleanup() {
+            node n8n-operator.js delete "$TEMP_ID" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          echo "=== READ ==="
+          node n8n-operator.js get "$TEMP_ID"
+
+          echo "=== UPDATE ==="
+          node n8n-operator.js update "$TEMP_ID" '{"name":"TEMP - GitHub Runner Validation Updated","nodes":[],"connections":{},"settings":{"executionOrder":"v1"}}'
+
+          echo "=== VERIFY ==="
+          node n8n-operator.js get "$TEMP_ID"
+
+          echo "=== DELETE ==="
+          node n8n-operator.js delete "$TEMP_ID"
+
+          trap - EXIT
+
+          echo "RESULTADO=VALIDADO"
